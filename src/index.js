@@ -15,7 +15,6 @@ var exchangeRates = {
 };
 
 
-
 function updateExchangeRates() {
     var request = require('request');
     request.get(exchangeRateURL, {}, function (err, res, data) {
@@ -28,9 +27,10 @@ function updateExchangeRates() {
             exchangeRates['UAH'] = 1;
             var jsonList = JSON.parse(JSONDATA);
             jsonList.forEach(function (entry) {
-                exchangeRates[entry.cc]=entry.rate;
+                exchangeRates[entry.cc] = entry.rate;
             });
             // console.log(exchangeRates);
+
         }
     });
 
@@ -43,12 +43,12 @@ schedule.scheduleJob('0 9 * * * ', function () {
 
 
 bot.onText(/\/update/, function (msg, match) {
-        updateExchangeRates();
-    });
+    updateExchangeRates();
+});
 
 bot.onText(/\/convert (.+)/, function (msg, match) {
     var tokens = msg.text.split(" ");
-    if(tokens.length != 5){
+    if (tokens.length != 5) {
         return;
     }
     var initSum = tokens[1];
@@ -57,14 +57,19 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     var initCurrencyToUahRate = exchangeRates[initCurrency];
     var uahToToCurrencyRate = exchangeRates[toCurrency];
     var finalSum = initSum * initCurrencyToUahRate / uahToToCurrencyRate;
-    bot.sendMessage(msg.chat.id, "Сума після конвертації: "+finalSum.toFixed(2)+toCurrency);
+    bot.sendMessage(msg.chat.id, "Сума після конвертації: " + finalSum.toFixed(2) + toCurrency);
 
 });
 
 bot.onText(/\/start/, function (msg, match) {
-   updateExchangeRates();
+    updateExchangeRates();
 });
 
+
+bot.onText(/\/rates/, function (msg, match) {
+    var exchangeRatesForToday = "Курс валют (до гривні) на сьогодні\n" + "🇺🇸 1.00 USD -- " + exchangeRates['USD'].toFixed(3) + " гривень\n" + "🇪🇺 1.00 EUR -- " + exchangeRates['EUR'].toFixed(3) + " гривень\n" + "🇬🇧 1.00 GBP -- " + exchangeRates['GBP'].toFixed(3) + " гривень\n" + "🇷🇺 1.00 RUB -- " + exchangeRates['RUB'].toFixed(3) + " гривень\n";
+    bot.sendMessage(msg.chat.id, exchangeRatesForToday);
+});
 
 
 
