@@ -71,50 +71,56 @@ var convertedCurrencyMessage = 'Выберите валюту для конве�
 // });
 
 
-bot.onText(/\/convert/, function (msg, match) {
+// bot.onText(/\/convert/, function (msg, match) {
+//     console.log(msg);
+//     var fromId = msg.chat.id;
+//     var initSum = 0;
+//     bot.onText(/^\$?\d+(,\d{3})*(\.\d*)?$/, function (msg, match) {
+//         initSum = parseFloat(msg.text);
+//         bot.sendMessage(fromId, initialCurrencyMessage, originalCurrencyOptions).then(function () {
+//             bot.on('callback_query', function (msg1) {
+//                 var init_currency = msg1.data;
+//                 var init_rate = exchangeRates[init_currency];
+//                 var sumToUAH = initSum * init_rate;
+//                 bot.sendMessage(fromId, convertedCurrencyMessage, originalCurrencyOptions).then(function () {
+//                     bot.on('callback_query', function (msg2) {
+//                         var to_currency = msg2.data;
+//                         var to_rate = exchangeRates[to_currency];
+//                         var finalSum = sumToUAH / to_rate;
+//                         finalSum = finalSum.toFixed(2);
+//                         if (finalSum)
+//                             return bot.sendMessage(fromId, 'Сумма после конвертации -- ' + finalSum);
+//                         initSum = 0;
+//                         init_currency = 0;
+//                         sumToUAH = 0;
+//                         init_rate = 0;
+//                         return;
+//                     });
+//                 });
+//             });
+//         });
+//     });
+// });
 
-
-    var fromId = msg.from.id;
-    var initSum = 0;
-    bot.onText(/^\$?\d+(,\d{3})*(\.\d*)?$/, function (msg, match) {
-        initSum = parseFloat(msg.text);
-        bot.sendMessage(fromId, initialCurrencyMessage, originalCurrencyOptions).then(function () {
-            bot.on('callback_query', function (msg1) {
-                var init_currency = msg1.data;
-
-
-                var init_rate = exchangeRates[init_currency];
-
-
-                var sumToUAH = initSum * init_rate;
-
-
-                bot.sendMessage(fromId, convertedCurrencyMessage, originalCurrencyOptions).then(function () {
-                    bot.on('callback_query', function (msg2) {
-                        var to_currency = msg2.data;
-                        var to_rate = exchangeRates[to_currency];
-                        var finalSum = sumToUAH / to_rate;
-
-
-                        finalSum = finalSum.toFixed(2);
-                        if (finalSum)
-                            return bot.sendMessage(fromId, 'Сумма после конвертации -- ' + finalSum);
-                        initSum = 0;
-                        init_currency = 0;
-                        sumToUAH = 0;
-                        init_rate = 0;
-                        return;
-                    });
-                });
-            });
-        });
-    });
-});
-
-bot.onText(/\/start_test/, function (msg, match) {
+bot.onText(/\/updateRates/, function (msg, match) {
         updateExchangeRates();
     }
 );
+
+bot.onText(/\/convert (.+)/, function (msg, match) {
+    var tokens = msg.text.split(" ");
+    if(tokens.length != 5){
+        return;
+    }
+    var initSum = tokens[1];
+    var initCurrency = tokens[2].toUpperCase();
+    var toCurrency = tokens[4].toUpperCase();
+    var initCurrencyToUahRate = exchangeRates[initCurrency];
+    var uahToToCurrencyRate = exchangeRates[toCurrency];
+    var finalSum = initSum * initCurrencyToUahRate / uahToToCurrencyRate;
+    bot.sendMessage(msg.chat.id, "Сумма после конвертации -- "+finalSum.toFixed(2));
+
+});
 
 
 
