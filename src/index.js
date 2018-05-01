@@ -14,7 +14,7 @@ var exchangeRates = {
     GBP: 36.0
 };
 //updates exchange rates every day at 9 am
-schedule.scheduleJob('0 9 * * * ', function () {
+schedule.scheduleJob('25 20 * * * ', function () {
     updateExchangeRates();
 });
 
@@ -31,22 +31,12 @@ function updateExchangeRates() {
             exchangeRates['UAH'] = 1;
             var jsonList = JSON.parse(JSONDATA);
             jsonList.forEach(function (entry) {
-                switch (entry.cc) {
-                    case 'EUR':
-                        exchangeRates['EUR'] = entry.rate;
-                        break;
-                    case 'USD':
-                        exchangeRates['USD'] = entry.rate;
-                        break;
-                    case 'GBP':
-                        exchangeRates['GBP'] = entry.rate;
-                        break;
-                    default:
-
-                }
+                exchangeRates[entry.cc]=entry.rate;
             });
+            // console.log(exchangeRates);
         }
     });
+
 }
 
 var originalCurrencyOptions = {
@@ -62,50 +52,10 @@ var correctSumRegExp = "\\d+(?:.\\d{1,2})?";
 var helpMessage = 'Приветствуем! Пожалуйста, введите число -- сумму, которую хотите конвертировать(разделитель -- точка). Бот предложит вам выбор валюты, из которой конвертировать, и валюты, в которую нужно конвертировать';
 var initialCurrencyMessage = 'Пожалуйста, укажите валюту суммы, которую вы хотите конвертировать';
 var convertedCurrencyMessage = 'Выберите валюту для конвертирования';
-// Listen for any kind of message. There are different kinds of
-// // messages.
-// bot.on('messag', function (msg){
-//     const chatId = msg.chat.id;
-//     // send a message to the chat acknowledging receipt of their message
-//     bot.sendMessage(msg.chat.id, helpMessage);
-// });
-
-
-// bot.onText(/\/convert/, function (msg, match) {
-//     console.log(msg);
-//     var fromId = msg.chat.id;
-//     var initSum = 0;
-//     bot.onText(/^\$?\d+(,\d{3})*(\.\d*)?$/, function (msg, match) {
-//         initSum = parseFloat(msg.text);
-//         bot.sendMessage(fromId, initialCurrencyMessage, originalCurrencyOptions).then(function () {
-//             bot.on('callback_query', function (msg1) {
-//                 var init_currency = msg1.data;
-//                 var init_rate = exchangeRates[init_currency];
-//                 var sumToUAH = initSum * init_rate;
-//                 bot.sendMessage(fromId, convertedCurrencyMessage, originalCurrencyOptions).then(function () {
-//                     bot.on('callback_query', function (msg2) {
-//                         var to_currency = msg2.data;
-//                         var to_rate = exchangeRates[to_currency];
-//                         var finalSum = sumToUAH / to_rate;
-//                         finalSum = finalSum.toFixed(2);
-//                         if (finalSum)
-//                             return bot.sendMessage(fromId, 'Сумма после конвертации -- ' + finalSum);
-//                         initSum = 0;
-//                         init_currency = 0;
-//                         sumToUAH = 0;
-//                         init_rate = 0;
-//                         return;
-//                     });
-//                 });
-//             });
-//         });
-//     });
-// });
 
 bot.onText(/\/update/, function (msg, match) {
         updateExchangeRates();
-    }
-);
+    });
 
 bot.onText(/\/convert (.+)/, function (msg, match) {
     var tokens = msg.text.split(" ");
