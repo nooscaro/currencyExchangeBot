@@ -102,7 +102,7 @@ var convertedCurrencyMessage = 'Выберите валюту для конве�
 //     });
 // });
 
-bot.onText(/\/updateRates/, function (msg, match) {
+bot.onText(/\/update/, function (msg, match) {
         updateExchangeRates();
     }
 );
