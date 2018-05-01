@@ -14,7 +14,7 @@ var exchangeRates = {
     GBP: 36.0
 };
 //updates exchange rates every day at 9 am
-schedule.scheduleJob('25 20 * * * ', function () {
+schedule.scheduleJob('0 9 * * * ', function () {
     updateExchangeRates();
 });
 
@@ -48,10 +48,6 @@ var originalCurrencyOptions = {
         ]
     })
 };
-var correctSumRegExp = "\\d+(?:.\\d{1,2})?";
-var helpMessage = 'Приветствуем! Пожалуйста, введите число -- сумму, которую хотите конвертировать(разделитель -- точка). Бот предложит вам выбор валюты, из которой конвертировать, и валюты, в которую нужно конвертировать';
-var initialCurrencyMessage = 'Пожалуйста, укажите валюту суммы, которую вы хотите конвертировать';
-var convertedCurrencyMessage = 'Выберите валюту для конвертирования';
 
 bot.onText(/\/update/, function (msg, match) {
         updateExchangeRates();
@@ -68,7 +64,7 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     var initCurrencyToUahRate = exchangeRates[initCurrency];
     var uahToToCurrencyRate = exchangeRates[toCurrency];
     var finalSum = initSum * initCurrencyToUahRate / uahToToCurrencyRate;
-    bot.sendMessage(msg.chat.id, "Сумма после конвертации -- "+finalSum.toFixed(2));
+    bot.sendMessage(msg.chat.id, "Сума післа конвертації -- "+finalSum.toFixed(2));
 
 });
 
