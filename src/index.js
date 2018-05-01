@@ -1,18 +1,33 @@
 const TelegramBot = require('node-telegram-bot-api');
+
 const schedule = require('node-schedule');
+
 // replace the value below with the Telegram token you receive from @BotFather
+
 const token = '453855287:AAFWGwmSQKOEVcoh2rFuV50_VZR1f-GXPy8';
 
+
+
 // Create a bot that uses 'polling' to fetch new updates
+
 const bot = new TelegramBot(token, {polling: true});
 
+
+
 const exchangeRateURL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
+
 var exchangeRates = {
+
     UAH: 1.0,
+
     USD: 27.0,
+
     EUR: 30.0,
+
     GBP: 36.0
+
 };
+
 
 const helpMessage = 'Цей бот допоможе Вам швидко переводити суми з однієї валюти до іншої (згідно курсу Національного Банку України, що оновлюється щоденно). \n' +
     'Бот оброблює текстові запити типу "/convert 100 uah to usd" — де  100 — сума цифрами (десятковий роздільник — крапка), uah/usd — міжнародні коди валют латиницею (можуть бути записані у будь-якому регістрі). Деякі широковживані коди валют: \n' +
@@ -29,26 +44,58 @@ const helpMessage = 'Цей бот допоможе Вам швидко пере
     'Для виклику інструкції — команда /help';
 
 
+
 function updateExchangeRates() {
+
     var request = require('request');
+
     request.get(exchangeRateURL, {}, function (err, res, data) {
+
         if (err) {
+
             return console.log(err);
+
         }
+
         if (res.statusCode != 209) {
+
             var JSONDATA = data;
+
             exchangeRates = [];
+
             exchangeRates['UAH'] = 1;
+
             var jsonList = JSON.parse(JSONDATA);
+
             jsonList.forEach(function (entry) {
+
                 exchangeRates[entry.cc] = entry.rate;
             });
             // console.log(exchangeRates);
 
         }
+
     });
 
+
+
+
 }
+
+
+
+//updates exchange rates every day at 9 am
+
+schedule.scheduleJob('0 9 * * * ', function () {
+
+    updateExchangeRates();
+
+});
+
+
+
+}
+
 
 //updates exchange rates every day at 9 am
 schedule.scheduleJob('0 9 * * * ', function () {
@@ -60,24 +107,69 @@ bot.onText(/\/update/, function (msg, match) {
     updateExchangeRates();
 });
 
+
 bot.onText(/\/convert (.+)/, function (msg, match) {
+
     var tokens = msg.text.split(" ");
+
     if (tokens.length != 5) {
+
+        return;
+
+    }
+    var re = /^\d+([.,]\d{1,2})?$/;
+    if(isNaN(tokens[1]) || re.test(tokens[1])){
+        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
         return;
     }
+    // exchangeRates.forEach(function(currency)
+    // {
+    //     if (tokens[2] != currency) {
+    //         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь help.");
+    //         return;
+    //     }
+    // });
+    function isValid(currency) {
+        return currency==tokens[2];
+    }
+
+    if(alert(exchangeRates.some(isValid))){
+        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь help.");
+        return;
+    }
+    // exchangeRates.filter(function(currency){
+    //     if (tokens[4] != currency) {
+    //         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь help.");
+    //         return;
+    //     }
+    // });
+
     var initSum = tokens[1];
+
     var initCurrency = tokens[2].toUpperCase();
+
     var toCurrency = tokens[4].toUpperCase();
+
     var initCurrencyToUahRate = exchangeRates[initCurrency];
+
     var uahToToCurrencyRate = exchangeRates[toCurrency];
+
     var finalSum = initSum * initCurrencyToUahRate / uahToToCurrencyRate;
+
     bot.sendMessage(msg.chat.id, "Сума після конвертації: " + finalSum.toFixed(2) + toCurrency);
 
+
+
 });
 
+
+
 bot.onText(/\/start/, function (msg, match) {
+
     updateExchangeRates();
+
 });
+
 
 
 bot.onText(/\/rates/, function (msg, match) {
@@ -88,6 +180,3 @@ bot.onText(/\/rates/, function (msg, match) {
 bot.onText(/\/help/, function (msg, match) {
    bot.sendMessage(msg.chat.id, helpMessage);
 });
-
-
-
