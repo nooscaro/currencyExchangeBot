@@ -61,33 +61,25 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
 
     var re = /^\d+([.,]\d{1,2})?$/;
     if(isNaN(tokens[1]) || re.test(tokens[1])){
-        bot.sendMessage(msg.chat.id, "Incorrect input. Read the \help.");
+        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
         return;
     }
-    originalCurrencyOptions.inline_keyboard.forEach(function(currency)
+    exchangeRates.forEach(function(currency)
     {
         if (tokens[2] != currency) {
-            bot.sendMessage(msg.chat.id, "Incorrect input. Read the \help.");
+            bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь help.");
             return;
         }
     });
 
-    originalCurrencyOptions.inline_keyboard.filter(function(currency){
+    exchangeRates.filter(function(currency){
         if (tokens[2] != currency) {
-            bot.sendMessage(msg.chat.id, "Incorrect input. Read the \help.");
+            bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь help.");
             return;
         }
     });
 
-    // if(tokens[2]!= originalCurrencyOptions.inline_keyboard[0] || tokens[2]!= originalCurrencyOptions.inline_keyboard[1] || tokens[2]!= originalCurrencyOptions.inline_keyboard[2] ){
-    //     bot.sendMessage(msg.chat.id, "Incorrect input. Read the \help.");
-    //  return;
-    // }
-    //
-    // if(tokens[4]!= originalCurrencyOptions.inline_keyboard[0] || tokens[4]!= originalCurrencyOptions.inline_keyboard[1] || tokens[4]!= originalCurrencyOptions.inline_keyboard[2] ){
-    //     bot.sendMessage(msg.chat.id, "Incorrect input. Read the \help.");
-    //     return;
-    // }
+
     var initSum = tokens[1];
     var initCurrency = tokens[2].toUpperCase();
     var toCurrency = tokens[4].toUpperCase();
