@@ -13,10 +13,7 @@ var exchangeRates = {
     EUR: 30.0,
     GBP: 36.0
 };
-//updates exchange rates every day at 9 am
-schedule.scheduleJob('0 9 * * * ', function () {
-    updateExchangeRates();
-});
+
 
 
 function updateExchangeRates() {
@@ -33,21 +30,17 @@ function updateExchangeRates() {
             jsonList.forEach(function (entry) {
                 exchangeRates[entry.cc]=entry.rate;
             });
-            console.log(exchangeRates);
+            // console.log(exchangeRates);
         }
     });
 
 }
 
-var originalCurrencyOptions = {
-    reply_markup: JSON.stringify({
-        inline_keyboard: [
-            [{text: 'UAH', callback_data: 'UAH'}],
-            [{text: 'USD', callback_data: 'USD'}],
-            [{text: 'GBP', callback_data: 'GBP'}]
-        ]
-    })
-};
+//updates exchange rates every day at 9 am
+schedule.scheduleJob('0 9 * * * ', function () {
+    updateExchangeRates();
+});
+
 
 bot.onText(/\/update/, function (msg, match) {
         updateExchangeRates();
@@ -64,8 +57,12 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     var initCurrencyToUahRate = exchangeRates[initCurrency];
     var uahToToCurrencyRate = exchangeRates[toCurrency];
     var finalSum = initSum * initCurrencyToUahRate / uahToToCurrencyRate;
-    bot.sendMessage(msg.chat.id, "Сума післа конвертації -- "+finalSum.toFixed(2));
+    bot.sendMessage(msg.chat.id, "Сума після конвертації: "+finalSum.toFixed(2)+toCurrency);
 
+});
+
+bot.onText(/\/start/, function (msg, match) {
+   updateExchangeRates();
 });
 
 
