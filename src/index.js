@@ -33,7 +33,7 @@ function updateExchangeRates() {
             jsonList.forEach(function (entry) {
                 exchangeRates[entry.cc]=entry.rate;
             });
-            // console.log(exchangeRates);
+            console.log(exchangeRates);
         }
     });
 
