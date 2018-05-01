@@ -31,22 +31,12 @@ function updateExchangeRates() {
             exchangeRates['UAH'] = 1;
             var jsonList = JSON.parse(JSONDATA);
             jsonList.forEach(function (entry) {
-                switch (entry.cc) {
-                    case 'EUR':
-                        exchangeRates['EUR'] = entry.rate;
-                        break;
-                    case 'USD':
-                        exchangeRates['USD'] = entry.rate;
-                        break;
-                    case 'GBP':
-                        exchangeRates['GBP'] = entry.rate;
-                        break;
-                    default:
-
-                }
+                exchangeRates[entry.cc]=entry.rate;
             });
+            console.log(exchangeRates);
         }
     });
+
 }
 
 var originalCurrencyOptions = {
@@ -58,65 +48,38 @@ var originalCurrencyOptions = {
         ]
     })
 };
-var correctSumRegExp = "\\d+(?:.\\d{1,2})?";
-var helpMessage = 'Приветствуем! Пожалуйста, введите число -- сумму, которую хотите конвертировать(разделитель -- точка). Бот предложит вам выбор валюты, из которой конвертировать, и валюты, в которую нужно конвертировать';
-var initialCurrencyMessage = 'Пожалуйста, укажите валюту суммы, которую вы хотите конвертировать';
-var convertedCurrencyMessage = 'Выберите валюту для конвертирования';
-// Listen for any kind of message. There are different kinds of
-// // messages.
-// bot.on('messag', function (msg){
-//     const chatId = msg.chat.id;
-//     // send a message to the chat acknowledging receipt of their message
-//     bot.sendMessage(msg.chat.id, helpMessage);
-// });
 
-
-bot.onText(/\/convert/, function (msg, match) {
-
-
-    var fromId = msg.from.id;
-    var initSum = 0;
-    bot.onText(/^\$?\d+(,\d{3})*(\.\d*)?$/, function (msg, match) {
-        initSum = parseFloat(msg.text);
-        bot.sendMessage(fromId, initialCurrencyMessage, originalCurrencyOptions).then(function () {
-            bot.on('callback_query', function (msg1) {
-                var init_currency = msg1.data;
-
-
-                var init_rate = exchangeRates[init_currency];
-
-
-                var sumToUAH = initSum * init_rate;
-
-
-                bot.sendMessage(fromId, convertedCurrencyMessage, originalCurrencyOptions).then(function () {
-                    bot.on('callback_query', function (msg2) {
-                        var to_currency = msg2.data;
-                        var to_rate = exchangeRates[to_currency];
-                        var finalSum = sumToUAH / to_rate;
-
-
-                        finalSum = finalSum.toFixed(2);
-                        if (finalSum)
-                            return bot.sendMessage(fromId, 'Сумма после конвертации -- ' + finalSum);
-                        initSum = 0;
-                        init_currency = 0;
-                        sumToUAH = 0;
-                        init_rate = 0;
-                        return;
-                    });
-                });
-            });
-        });
-    });
+bot.onText(/\/update/, function (msg, match) {
+    updateExchangeRates();
 });
 
-bot.onText(/\/start_test/, function (msg, match) {
-        updateExchangeRates();
+bot.onText(/\/convert (.+)/, function (msg, match) {
+    var tokens = msg.text.split(" ");
+    if(tokens.length != 5){
+        return;
     }
-);
 
+    var re = /^\d+([.,]\d{1,2})?$/;
+    if(isNaN(tokens[1]) || re.test(tokens[1])){
+        bot.sendMessage(msg.chat.id, "Incorrect input. Read the \help.");
+        return;
+    }
+    
+    if(tokens[2]!= originalCurrencyOptions.inline_keyboard[0] || tokens[2]!= originalCurrencyOptions.inline_keyboard[1] || tokens[2]!= originalCurrencyOptions.inline_keyboard[2] ){
+        bot.sendMessage(msg.chat.id, "Incorrect input. Read the \help.");
+     return;
+    }
 
+    if(tokens[4]!= originalCurrencyOptions.inline_keyboard[0] || tokens[4]!= originalCurrencyOptions.inline_keyboard[1] || tokens[4]!= originalCurrencyOptions.inline_keyboard[2] ){
+        bot.sendMessage(msg.chat.id, "Incorrect input. Read the \help.");
+        return;
+    }
+    var initSum = tokens[1];
+    var initCurrency = tokens[2].toUpperCase();
+    var toCurrency = tokens[4].toUpperCase();
+    var initCurrencyToUahRate = exchangeRates[initCurrency];
+    var uahToToCurrencyRate = exchangeRates[toCurrency];
+    var finalSum = initSum * initCurrencyToUahRate / uahToToCurrencyRate;
+    bot.sendMessage(msg.chat.id, "Сума післа конвертації -- "+finalSum.toFixed(2));
 
-
-
+});
