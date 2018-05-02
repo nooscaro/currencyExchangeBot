@@ -6,11 +6,17 @@ const schedule = require('node-schedule');
 
 const token = '453855287:AAFWGwmSQKOEVcoh2rFuV50_VZR1f-GXPy8';
 
+const PORT = process.env.PORT || 3000;
+const URL = process.env.URL || 'https://currency-exchange-bot.herokuapp.com';
+
 
 // Create a bot that uses 'polling' to fetch new updates
 
-const bot = new TelegramBot(token, {polling: true});
+// const bot = new TelegramBot(token, {polling: true});
 
+var port = process.env.PORT || 8443;
+var host = process.env.HOST;
+var bot = new TelegramBot(token, {webHook: {port: port, host: host}});
 
 const exchangeRateURL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
 
