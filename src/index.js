@@ -117,20 +117,27 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
 
     var arr = ['uah', 'usd', 'eur', 'gbp', 'rub', 'pln', 'jpy', 'cny' ];
 
-    function find(array, value) {
-        if (array.indexOf) {
-            return array.indexOf(value);
-        }
 
-        for (var i = 0; i < array.length; i++) {
-            if (array[i] === value) return 1;
-        }
+    //
+    // function find(array, value) {
+    //     if (array.indexOf) {
+    //         return array.indexOf(value);
+    //     }
+    //
+    //     for (var i = 0; i < array.length; i++) {
+    //         if (array[i] === value) return 1;
+    //     }
+    //
+    //     return -1;
+    // }
+    //
+    //
+    // if (find(arr, tokens[2]) === -1 || find(arr, tokens[4]) === -1) {
+    //     bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
+    //     return;
+    // }
 
-        return -1;
-    }
-
-
-    if (find(arr, tokens[2]) === -1 || find(arr, tokens[4]) === -1) {
+    if(!exchangeRates[tokens[2]] || !exchangeRates[tokens[4]]){
         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
         return;
     }
