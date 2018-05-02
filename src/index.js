@@ -14,10 +14,11 @@ const URL = process.env.URL || 'https://currency-exchange-bot.herokuapp.com';
 
 // const bot = new TelegramBot(token, {polling: true});
 
-var port = process.env.PORT || 8443;
+var port = process.env.PORT || 443;
 var host = process.env.HOST;
 var bot = new TelegramBot(token, {webHook: {port: port, host: host}});
-
+var externalUrl = 'https://currency-exchange-bot.herokuapp.com/';
+bot.setWebHook(externalUrl + ':443/bot' + token)
 const exchangeRateURL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
 
 var exchangeRates = {
