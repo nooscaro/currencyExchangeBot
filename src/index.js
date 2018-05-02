@@ -82,14 +82,6 @@ function updateExchangeRates() {
 //updates exchange rates every day at 9 am
 
 schedule.scheduleJob('0 9 * * * ', function () {
-
-    updateExchangeRates();
-
-});
-
-
-//updates exchange rates every day at 9 am
-schedule.scheduleJob('0 9 * * * ', function () {
     updateExchangeRates();
 });
 
@@ -115,29 +107,8 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
         return;
     }
 
-    // var arr = ['uah', 'usd', 'eur', 'gbp', 'rub', 'pln', 'jpy', 'cny' ];
 
-
-    //
-    // function find(array, value) {
-    //     if (array.indexOf) {
-    //         return array.indexOf(value);
-    //     }
-    //
-    //     for (var i = 0; i < array.length; i++) {
-    //         if (array[i] === value) return 1;
-    //     }
-    //
-    //     return -1;
-    // }
-    //
-    //
-    // if (find(arr, tokens[2]) === -1 || find(arr, tokens[4]) === -1) {
-    //     bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
-    //     return;
-    // }
-
-    if(!exchangeRates.hasOwnProperty(tokens[2].toUpperCase()) || !exchangeRates.hasOwnProperty(tokens[4].toUpperCase())){
+    if (!exchangeRates.hasOwnProperty(tokens[2].toUpperCase()) || !exchangeRates.hasOwnProperty(tokens[4].toUpperCase())) {
         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
         return;
     }
@@ -164,7 +135,7 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
 bot.onText(/\/start/, function (msg, match) {
 
     updateExchangeRates();
-
+    bot.sendMessage(msg.chat.id, helpMessage);
 });
 
 
