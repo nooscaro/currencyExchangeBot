@@ -7,11 +7,9 @@ const schedule = require('node-schedule');
 const token = '453855287:AAFWGwmSQKOEVcoh2rFuV50_VZR1f-GXPy8';
 
 
-
 // Create a bot that uses 'polling' to fetch new updates
 
 const bot = new TelegramBot(token, {polling: true});
-
 
 
 const exchangeRateURL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
@@ -24,7 +22,8 @@ var exchangeRates = {
 
     EUR: 30.0,
 
-    GBP: 36.0
+    GBP: 36.0,
+
 
 };
 
@@ -40,9 +39,8 @@ const helpMessage = 'Цей бот допоможе Вам швидко пере
     '🇯🇵 JPY — єна\n' +
     '🇨🇳 CNY — юань\n' +
     'Оновлення курсу відбувається щоденно, але якщо Ви хочете упевнитися, що він актуальний, Ви можете зробити це самостійно за допомогою команди /update\n' +
-    'Подивитися актуальний курс валют для найбільш популярних валют можна за допомогою команди /rates\n'+
+    'Подивитися актуальний курс валют для найбільш популярних валют можна за допомогою команди /rates\n' +
     'Для виклику інструкції — команда /help';
-
 
 
 function updateExchangeRates() {
@@ -78,10 +76,7 @@ function updateExchangeRates() {
     });
 
 
-
-
 }
-
 
 
 //updates exchange rates every day at 9 am
@@ -91,10 +86,6 @@ schedule.scheduleJob('0 9 * * * ', function () {
     updateExchangeRates();
 
 });
-
-
-
-}
 
 
 //updates exchange rates every day at 9 am
@@ -113,36 +104,37 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     var tokens = msg.text.split(" ");
 
     if (tokens.length != 5) {
-
+        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
         return;
 
     }
-    var re = /^\d+([.,]\d{1,2})?$/;
-    if(isNaN(tokens[1]) || re.test(tokens[1])){
+
+    var re = /^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/;
+    if (!re.test(tokens[1])) {
         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
         return;
     }
-    // exchangeRates.forEach(function(currency)
-    // {
-    //     if (tokens[2] != currency) {
-    //         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь help.");
-    //         return;
-    //     }
-    // });
-    function isValid(currency) {
-        return currency==tokens[2];
+
+    var arr = ['uah', 'usd', 'eur', 'gbp', 'rub', 'pln', 'jpy', 'cny' ];
+
+    function find(array, value) {
+        if (array.indexOf) {
+            return array.indexOf(value);
+        }
+
+        for (var i = 0; i < array.length; i++) {
+            if (array[i] === value) return 1;
+        }
+
+        return -1;
     }
 
-    if(alert(exchangeRates.some(isValid))){
-        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь help.");
+
+    if (find(arr, tokens[2]) === -1 || find(arr, tokens[4]) === -1) {
+        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
         return;
     }
-    // exchangeRates.filter(function(currency){
-    //     if (tokens[4] != currency) {
-    //         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь help.");
-    //         return;
-    //     }
-    // });
+
 
     var initSum = tokens[1];
 
@@ -159,9 +151,7 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     bot.sendMessage(msg.chat.id, "Сума після конвертації: " + finalSum.toFixed(2) + toCurrency);
 
 
-
 });
-
 
 
 bot.onText(/\/start/, function (msg, match) {
@@ -171,12 +161,11 @@ bot.onText(/\/start/, function (msg, match) {
 });
 
 
-
 bot.onText(/\/rates/, function (msg, match) {
     var exchangeRatesForToday = "Курс валют (до гривні) на сьогодні\n" + "🇺🇸 1.00 USD -- " + exchangeRates['USD'].toFixed(3) + " гривень\n" + "🇪🇺 1.00 EUR -- " + exchangeRates['EUR'].toFixed(3) + " гривень\n" + "🇬🇧 1.00 GBP -- " + exchangeRates['GBP'].toFixed(3) + " гривень\n" + "🇷🇺 1.00 RUB -- " + exchangeRates['RUB'].toFixed(3) + " гривень\n";
     bot.sendMessage(msg.chat.id, exchangeRatesForToday);
 });
 
 bot.onText(/\/help/, function (msg, match) {
-   bot.sendMessage(msg.chat.id, helpMessage);
+    bot.sendMessage(msg.chat.id, helpMessage);
 });
