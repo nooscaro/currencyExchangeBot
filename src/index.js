@@ -48,29 +48,19 @@ function updateExchangeRates() {
     var request = require('request');
 
     request.get(exchangeRateURL, {}, function (err, res, data) {
-
         if (err) {
-
             return console.log(err);
-
         }
 
         if (res.statusCode != 209) {
-
             var JSONDATA = data;
-
             exchangeRates = [];
-
             exchangeRates['UAH'] = 1;
-
             var jsonList = JSON.parse(JSONDATA);
-
             jsonList.forEach(function (entry) {
-
                 exchangeRates[entry.cc] = entry.rate;
             });
             // console.log(exchangeRates);
-
         }
 
     });
@@ -94,38 +84,28 @@ bot.onText(/\/update/, function (msg, match) {
 bot.onText(/\/convert (.+)/, function (msg, match) {
 
     var tokens = msg.text.split(" ");
-
+    //request validation
     if (tokens.length != 5) {
         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
         return;
 
     }
-
     var re = /^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/;
     if (!re.test(tokens[1])) {
         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
         return;
     }
-
-
     if (!exchangeRates.hasOwnProperty(tokens[2].toUpperCase()) || !exchangeRates.hasOwnProperty(tokens[4].toUpperCase())) {
         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
         return;
     }
 
-
     var initSum = tokens[1];
-
     var initCurrency = tokens[2].toUpperCase();
-
     var toCurrency = tokens[4].toUpperCase();
-
     var initCurrencyToUahRate = exchangeRates[initCurrency];
-
     var uahToToCurrencyRate = exchangeRates[toCurrency];
-
     var finalSum = initSum * initCurrencyToUahRate / uahToToCurrencyRate;
-
     bot.sendMessage(msg.chat.id, "Сума після конвертації: " + finalSum.toFixed(2) + toCurrency);
 
 
@@ -133,7 +113,6 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
 
 
 bot.onText(/\/start/, function (msg, match) {
-
     updateExchangeRates();
     bot.sendMessage(msg.chat.id, helpMessage);
 });
