@@ -93,13 +93,13 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     var tokens = msg.text.split(" ");
     //request validation
     if (tokens.length != 5) {
-        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
+        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
         return;
 
     }
     var re = /^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/;
     if (!re.test(tokens[1])) {
-        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
+        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
         return;
     }
     if (!exchangeRates.hasOwnProperty(tokens[2].toUpperCase()) || !exchangeRates.hasOwnProperty(tokens[4].toUpperCase())) {
