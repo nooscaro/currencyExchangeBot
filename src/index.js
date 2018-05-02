@@ -115,7 +115,7 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
         return;
     }
 
-    var arr = ['uah', 'usd', 'eur', 'gbp', 'rub', 'pln', 'jpy', 'cny' ];
+    // var arr = ['uah', 'usd', 'eur', 'gbp', 'rub', 'pln', 'jpy', 'cny' ];
 
 
     //
@@ -137,8 +137,8 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     //     return;
     // }
 
-    if(!exchangeRates[tokens[2]] || !exchangeRates[tokens[4]]){
-        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь \help.");
+    if(!exchangeRates.hasOwnProperty(tokens[2].toUpperCase()) || !exchangeRates.hasOwnProperty(tokens[4].toUpperCase())){
+        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
         return;
     }
 
