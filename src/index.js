@@ -108,6 +108,10 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     }
 
     var initSum = tokens[1];
+    if(isNaN(initSum)){
+        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
+        return;
+    }
     var initCurrency = tokens[2].toUpperCase();
     var toCurrency = tokens[4].toUpperCase();
     var initCurrencyToUahRate = exchangeRates[initCurrency];
