@@ -14,6 +14,10 @@ var bot = new TelegramBot(token, {webHook: {port: port, host: host}});
 var externalUrl = 'https://currency-exchange-bot.herokuapp.com/';
 bot.setWebHook(externalUrl + ':443/bot' + token);
 
+
+//NEW URL to get updated exchange rates (finance.ua)
+const financeUAExchangeRatesURL = 'http://resources.finance.ua/ua/public/currency-cash.json';
+
 //NBU api URL to get updated exchange rates
 const exchangeRateURL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
 //static values for some of the most used currencies in case something goes wrong with the update
