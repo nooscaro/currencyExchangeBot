@@ -58,7 +58,7 @@ function updateExchangeRates() {
                 exchangeRates[entry.cc] = entry.rate;
             });
         }
-
+        console.log("Exchange rates updated!!!!!!");
     });
 
 
