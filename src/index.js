@@ -1,37 +1,27 @@
 const TelegramBot = require('node-telegram-bot-api');
-
 const schedule = require('node-schedule');
 
-// replace the value below with the Telegram token you receive from @BotFather
 
 const token = '453855287:AAFWGwmSQKOEVcoh2rFuV50_VZR1f-GXPy8';
-
 const PORT = process.env.PORT || 3000;
 const URL = process.env.URL || 'https://currency-exchange-bot.herokuapp.com';
 
 
-// Create a bot that uses 'polling' to fetch new updates
-
-// const bot = new TelegramBot(token, {polling: true});
-
+//Creating a bot that uses a webhook to get updates
 var port = process.env.PORT || 443;
 var host = process.env.HOST;
 var bot = new TelegramBot(token, {webHook: {port: port, host: host}});
 var externalUrl = 'https://currency-exchange-bot.herokuapp.com/';
-bot.setWebHook(externalUrl + ':443/bot' + token)
+bot.setWebHook(externalUrl + ':443/bot' + token);
+
+//NBU api URL to get updated exchange rates
 const exchangeRateURL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
-
+//static values for some of the most used currencies in case something goes wrong with the update
 var exchangeRates = {
-
     UAH: 1.0,
-
     USD: 27.0,
-
     EUR: 30.0,
-
-    GBP: 36.0,
-
-
+    GBP: 36.0
 };
 
 
@@ -67,7 +57,6 @@ function updateExchangeRates() {
             jsonList.forEach(function (entry) {
                 exchangeRates[entry.cc] = entry.rate;
             });
-            // console.log(exchangeRates);
         }
 
     });
@@ -76,9 +65,8 @@ function updateExchangeRates() {
 }
 
 
-//updates exchange rates every day at 9 am
-
-schedule.scheduleJob('0 9 * * * ', function () {
+//updates exchange rates every 15 minutes
+schedule.scheduleJob('*/15 * * * *', function () {
     updateExchangeRates();
 });
 
@@ -95,7 +83,6 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     if (tokens.length != 5) {
         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
         return;
-
     }
     var re = /^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$/;
     if (!re.test(tokens[1])) {
@@ -108,10 +95,11 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
     }
 
     var initSum = tokens[1];
-    if(isNaN(initSum)){
+    if (isNaN(initSum)) {
         bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
         return;
     }
+    // request processing (converting from initial currency to UAH and then to the desired currency
     var initCurrency = tokens[2].toUpperCase();
     var toCurrency = tokens[4].toUpperCase();
     var initCurrencyToUahRate = exchangeRates[initCurrency];
