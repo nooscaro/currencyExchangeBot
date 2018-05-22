@@ -77,7 +77,7 @@ bot.onText(/\/update/, function (msg, match) {
 
 
 bot.onText(/\/convert (.+)/, function (msg, match) {
-
+    updateExchangeRates();
     var tokens = msg.text.split(" ");
     //request validation
     if (tokens.length != 5) {
@@ -90,12 +90,11 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
         return;
     }
     if (!exchangeRates.hasOwnProperty(tokens[2].toUpperCase()) || !exchangeRates.hasOwnProperty(tokens[4].toUpperCase())) {
-        updateExchangeRates();
-        if (!exchangeRates.hasOwnProperty(tokens[2].toUpperCase()) || !exchangeRates.hasOwnProperty(tokens[4].toUpperCase())) {
+
             bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
             return;
 
-        }
+
     }
 
     var initSum = tokens[1];
