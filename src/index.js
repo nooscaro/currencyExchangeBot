@@ -90,8 +90,12 @@ bot.onText(/\/convert (.+)/, function (msg, match) {
         return;
     }
     if (!exchangeRates.hasOwnProperty(tokens[2].toUpperCase()) || !exchangeRates.hasOwnProperty(tokens[4].toUpperCase())) {
-        bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
-        return;
+        updateExchangeRates();
+        if (!exchangeRates.hasOwnProperty(tokens[2].toUpperCase()) || !exchangeRates.hasOwnProperty(tokens[4].toUpperCase())) {
+            bot.sendMessage(msg.chat.id, "Неправильний формат запису. Скористайтесь /help.");
+            return;
+
+        }
     }
 
     var initSum = tokens[1];
