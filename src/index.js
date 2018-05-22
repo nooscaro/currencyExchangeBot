@@ -1,10 +1,12 @@
 const TelegramBot = require('node-telegram-bot-api');
 const schedule = require('node-schedule');
-
+const request = require('request');
 
 const token = '453855287:AAFWGwmSQKOEVcoh2rFuV50_VZR1f-GXPy8';
 const PORT = process.env.PORT || 3000;
 const URL = process.env.URL || 'https://currency-exchange-bot.herokuapp.com';
+
+
 
 
 //Creating a bot that uses a webhook to get updates
@@ -17,6 +19,20 @@ bot.setWebHook(externalUrl + ':443/bot' + token);
 
 //NEW URL to get updated exchange rates (finance.ua)
 const financeUAExchangeRatesURL = 'http://resources.finance.ua/ua/public/currency-cash.json';
+
+//NEW exchange rates: initial_currency->UAH(aka bid) and UAH->final_currency(aka ask).
+var init_currency_to_UAH = {
+    UAH: 1.0,
+    USD: 26.0,
+    EUR: 30.0
+};
+var UAH_to_final_currency = {
+    UAH: 1.0,
+    USD: 26.0,
+    EUR: 30.0
+};
+
+
 
 //NBU api URL to get updated exchange rates
 const exchangeRateURL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
@@ -43,10 +59,30 @@ const helpMessage = 'Цей бот допоможе Вам швидко пере
     'Подивитися актуальний курс валют для найбільш популярних валют можна за допомогою команди /rates\n' +
     'Для виклику інструкції — команда /help';
 
+//updating exchange rates from finance.ua data
+function NEWupdateExchangeRates() {
+    request.get(financeUAExchangeRatesURL, {}, function (err, res, data) {
+       if(err){
+           return console.log(err);
+       }
+       if(res.statusCode != 209) {
+           var jsonData = JSON.parse(data);
+           var organistaionsList = jsonData['organizations'];
+           var prev_init_to_UAH = 0;
+           var prev_UAH_to_final = 0;
+           for(var i = 0; i<organistaionsList.length; i++) {
+               var currency_list = organistaionsList[i]['currencies'];
+
+
+           }
+       }
+    });
+}
+
 
 function updateExchangeRates() {
 
-    var request = require('request');
+
 
     request.get(exchangeRateURL, {}, function (err, res, data) {
         if (err) {
