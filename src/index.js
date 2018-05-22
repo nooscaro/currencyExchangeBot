@@ -121,6 +121,7 @@ bot.onText(/\/start/, function (msg, match) {
 
 
 bot.onText(/\/rates/, function (msg, match) {
+    updateExchangeRates();
     var exchangeRatesForToday = "Курс валют (до гривні) на сьогодні\n" + "🇺🇸 1.00 USD -- " + exchangeRates['USD'].toFixed(3) + " гривень\n" + "🇪🇺 1.00 EUR -- " + exchangeRates['EUR'].toFixed(3) + " гривень\n" + "🇬🇧 1.00 GBP -- " + exchangeRates['GBP'].toFixed(3) + " гривень\n" + "🇷🇺 1.00 RUB -- " + exchangeRates['RUB'].toFixed(3) + " гривень\n";
     bot.sendMessage(msg.chat.id, exchangeRatesForToday);
 });
